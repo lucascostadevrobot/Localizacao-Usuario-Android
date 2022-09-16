@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Localizacao Usuario</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <!--Passando uma String para referenciar API KEY-->
+    <string name="MAPS_API_KEY">${MAPS_API_KEY}</string>
+</resources>
