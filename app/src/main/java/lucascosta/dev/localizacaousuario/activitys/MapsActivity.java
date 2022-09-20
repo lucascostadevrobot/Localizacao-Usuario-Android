@@ -1,8 +1,9 @@
 package lucascosta.dev.localizacaousuario.activitys;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.core.location.LocationListenerCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
@@ -11,12 +12,11 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.nfc.Tag;
 import android.os.Bundle;
-import android.os.LocaleList;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -24,11 +24,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import lucascosta.dev.localizacaousuario.R;
 import lucascosta.dev.localizacaousuario.databinding.ActivityMapsBinding;
-import lucascosta.dev.localizacaousuario.util.Permissoes;
+import lucascosta.dev.localizacaousuario.utills.Permissoes;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -61,7 +62,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         locationListener = new LocationListener() {
             @Override
             //
-            public void onLocationChanged(Location location) {
+            public void onLocationChanged( @NonNull  Location location) {
                 Log.d("Localização","onLocationChanged: " + location.toString());
             }
         };
@@ -85,10 +86,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+
+
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        LatLng itaperuna = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(itaperuna).title("Unimed Norte Fluminense"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(itaperuna));
+
+        //Metodo  para dar zoom no mapa através do moveCamera e passando CameraUpdateFactory
+        mMap.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(itaperuna, 15)
+        );
+
+        //Chamando o arquivo json com a estilização do mapa através desse metodo
+        //Através dessa funcionalidade conseguimos chamar um mapa estilizado no arquivo JSON
+        try {
+            // Customise the styling of the base map using a JSON object defined
+            // in a raw resource file.
+            boolean success = googleMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.style_json));
+
+            if (!success) {
+                Log.e(TAG, "Style parsing failed.");
+            }
+        } catch (Resources.NotFoundException e) {
+            Log.e(TAG, "Can't find style. Error: ", e);
+        }
     }
 
     //Sobrescrevendo o metodo onRequestPermissionResults para passar as permissoes
@@ -147,4 +171,5 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             AlertDialog dialog = builder.create();
             dialog.show();
         }
+
 }
